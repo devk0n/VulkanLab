@@ -55,6 +55,18 @@ build CMakeFiles/VulkanLab.dir/main.cpp.o: CXX_COMPILER__VulkanLab_unscanned_Deb
   OBJECT_DIR = CMakeFiles/VulkanLab.dir
   OBJECT_FILE_DIR = CMakeFiles/VulkanLab.dir
 
+build CMakeFiles/VulkanLab.dir/vl_window.cpp.o: CXX_COMPILER__VulkanLab_unscanned_Debug /home/devkon/CLionProjects/VulkanLab/vl_window.cpp || cmake_object_order_depends_target_VulkanLab
+  DEP_FILE = CMakeFiles/VulkanLab.dir/vl_window.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/VulkanLab.dir
+  OBJECT_FILE_DIR = CMakeFiles/VulkanLab.dir
+
+build CMakeFiles/VulkanLab.dir/first_app.cpp.o: CXX_COMPILER__VulkanLab_unscanned_Debug /home/devkon/CLionProjects/VulkanLab/first_app.cpp || cmake_object_order_depends_target_VulkanLab
+  DEP_FILE = CMakeFiles/VulkanLab.dir/first_app.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/VulkanLab.dir
+  OBJECT_FILE_DIR = CMakeFiles/VulkanLab.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target VulkanLab
@@ -63,7 +75,7 @@ build CMakeFiles/VulkanLab.dir/main.cpp.o: CXX_COMPILER__VulkanLab_unscanned_Deb
 #############################################
 # Link the executable VulkanLab
 
-build VulkanLab: CXX_EXECUTABLE_LINKER__VulkanLab_Debug CMakeFiles/VulkanLab.dir/main.cpp.o | /usr/lib/libglfw.so.3.4 /lib/libvulkan.so
+build VulkanLab: CXX_EXECUTABLE_LINKER__VulkanLab_Debug CMakeFiles/VulkanLab.dir/main.cpp.o CMakeFiles/VulkanLab.dir/vl_window.cpp.o CMakeFiles/VulkanLab.dir/first_app.cpp.o | /usr/lib/libglfw.so.3.4 /lib/libvulkan.so
   FLAGS = -g
   LINK_LIBRARIES = /usr/lib/libglfw.so.3.4  /lib/libvulkan.so
   OBJECT_DIR = CMakeFiles/VulkanLab.dir
