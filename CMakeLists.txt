@@ -1,21 +1,20 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.10)
 project(VulkanLab)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Include GLFW and GLM headers manually
-include_directories(${CMAKE_SOURCE_DIR}/include)
+# Include GLFW and GLM directories
+include_directories("C:/Users/devkon/Development/Tools/glfw-3.4.bin.WIN64/include")
+include_directories("C:/Users/devkon/Development/Tools/glm/glm")
+
+# Link GLFW library directories
+link_directories("C:/Users/devkon/Development/Tools/glfw-3.4.bin.WIN64/lib-mingw-w64")
+
+# Find Vulkan
+find_package(Vulkan REQUIRED)
 
 # Add executable
 add_executable(VulkanLab src/main.cpp)
 
-# Link GLFW manually
-target_include_directories(VulkanLab PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(VulkanLab ${CMAKE_SOURCE_DIR}/include/GLFW)
-
-# Find Vulkan
-find_package(Vulkan REQUIRED)
-target_link_libraries(VulkanLab Vulkan::Vulkan)
-
-# GLM is a header-only library, just include the headers
-include_directories(${CMAKE_SOURCE_DIR}/include/glm)
+# Link libraries (do NOT include GLM here)
+target_link_libraries(VulkanLab Vulkan::Vulkan glfw3)
