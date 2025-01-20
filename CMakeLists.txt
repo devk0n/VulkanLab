@@ -3,19 +3,19 @@ project(VulkanLab)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(glfw3 REQUIRED)
+# Include GLFW and GLM headers manually
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# Add executable
+add_executable(VulkanLab src/main.cpp)
+
+# Link GLFW manually
+target_include_directories(VulkanLab PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(VulkanLab ${CMAKE_SOURCE_DIR}/include/GLFW)
+
+# Find Vulkan
 find_package(Vulkan REQUIRED)
-find_package(glm REQUIRED)
-
-add_executable(VulkanLab main.cpp
-        vl_window.h
-        vl_window.cpp
-        first_app.h
-        first_app.cpp
-)
-
-target_link_libraries(VulkanLab glfw)
 target_link_libraries(VulkanLab Vulkan::Vulkan)
-target_link_libraries(glm::glm)
 
-
+# GLM is a header-only library, just include the headers
+include_directories(${CMAKE_SOURCE_DIR}/include/glm)
