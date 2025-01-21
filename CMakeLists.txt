@@ -15,6 +15,7 @@ find_package(Vulkan REQUIRED)
 
 # Add executable
 add_executable(VulkanLab src/main.cpp
+        10_fixed_functions.
 )
 
 # Link libraries (do NOT include GLM here)
