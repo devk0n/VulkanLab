@@ -14,9 +14,7 @@ link_directories("C:/Users/devkon/Development/Tools/glfw-3.4.bin.WIN64/lib-mingw
 find_package(Vulkan REQUIRED)
 
 # Add executable
-add_executable(VulkanLab src/main.cpp
-        10_fixed_functions.
-)
+add_executable(VulkanLab src/main.cpp)
 
 # Link libraries (do NOT include GLM here)
 target_link_libraries(VulkanLab Vulkan::Vulkan glfw3)
