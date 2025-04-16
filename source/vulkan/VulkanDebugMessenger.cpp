@@ -27,7 +27,7 @@ VulkanDebugMessenger::VulkanDebugMessenger(VkInstance instance)
         throw std::runtime_error("Failed to set up Vulkan debug messenger.");
     }
 
-    INFO("Vulkan debug messenger initialized.");
+    DEBUG("Vulkan debug messenger initialized.");
 }
 
 VulkanDebugMessenger::~VulkanDebugMessenger() {
@@ -35,7 +35,7 @@ VulkanDebugMessenger::~VulkanDebugMessenger() {
         const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT"));
         func(m_instance, m_messenger, nullptr);
-        INFO("Vulkan debug messenger destroyed.");
+        DEBUG("Vulkan debug messenger destroyed.");
     }
 }
 

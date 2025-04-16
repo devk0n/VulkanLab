@@ -24,7 +24,7 @@ VulkanSyncObjects::VulkanSyncObjects(VkDevice device, size_t frameCount)
             }
     }
 
-    INFO("Created sync objects for ", frameCount, " frames.");
+    DEBUG("Created sync objects for ", frameCount, " frames.");
 }
 
 VulkanSyncObjects::~VulkanSyncObjects() {
@@ -33,5 +33,5 @@ VulkanSyncObjects::~VulkanSyncObjects() {
         vkDestroySemaphore(m_device, frame.renderFinished, nullptr);
         vkDestroySemaphore(m_device, frame.imageAvailable, nullptr);
     }
-    INFO("Destroyed sync objects.");
+    DEBUG("Destroyed sync objects.");
 }

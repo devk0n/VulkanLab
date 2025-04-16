@@ -14,6 +14,7 @@
 
 #include "Vertex.h"
 #include "VulkanBuffer.h"
+#include "VulkanPipeline.h"
 
 std::vector<Vertex> vertices = {
     { {  0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },  // Bottom
@@ -48,7 +49,10 @@ void Application::initialize() {
         throw std::runtime_error("Failed to create window.");
     }
 
-    INFO("GLFW window created.");
+    glfwSetWindowUserPointer(m_window, this);
+    glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
+
+    DEBUG("GLFW window created.");
 
     m_vulkanInstance = std::make_unique<VulkanInstance>(true);
     m_debugMessenger = std::make_unique<VulkanDebugMessenger>(m_vulkanInstance->get());
@@ -87,6 +91,11 @@ void Application::initialize() {
         MAX_FRAMES_IN_FLIGHT
     );
 
+    m_pipeline = std::make_unique<VulkanPipeline>(
+        m_device->getDevice(),
+        m_renderPass->get()
+    );
+
     m_vertexBuffer = std::make_unique<VulkanBuffer>(
         m_device->getDevice(),
         m_device->getPhysicalDevice(),
@@ -100,6 +109,7 @@ void Application::initialize() {
     vkMapMemory(m_device->getDevice(), m_vertexBuffer->getMemory(), 0, VK_WHOLE_SIZE, 0, &data);
     memcpy(data, vertices.data(), sizeof(Vertex) * vertices.size());
     vkUnmapMemory(m_device->getDevice(), m_vertexBuffer->getMemory());
+
 }
 
 void Application::mainLoop() {
@@ -126,11 +136,14 @@ void Application::drawFrame() {
     // Acquire image to render into
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(device, swapchain, UINT64_MAX,
-                                            frameSync.imageAvailable, VK_NULL_HANDLE, &imageIndex);
+                                        frameSync.imageAvailable, VK_NULL_HANDLE, &imageIndex);
+
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        // Handle swapchain recreation here if needed
-        return;
+        recreateSwapchain();
+        return; // Skip this frame
+    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        throw std::runtime_error("Failed to acquire swapchain image.");
     }
 
     // Use command buffer for this frame, not image
@@ -142,7 +155,7 @@ void Application::drawFrame() {
     };
     vkBeginCommandBuffer(cmd, &beginInfo);
 
-    VkClearValue clearColor = { .color = {{ 0.05f, 0.05f, 0.1f, 1.0f }} };
+    VkClearValue clearColor = { .color = {{ 0.0f, 0.0f, 0.0f, 1.0f }} };
 
     VkRenderPassBeginInfo renderPassInfo {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -154,6 +167,33 @@ void Application::drawFrame() {
     };
 
     vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->get());
+
+    VkDeviceSize offset = 0;
+    VkBuffer buffer = m_vertexBuffer->get();
+    vkCmdBindVertexBuffers(cmd, 0, 1, &buffer, &offset);
+
+    VkViewport viewport {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<float>(extent.width),
+        .height = static_cast<float>(extent.height),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    VkRect2D scissor {
+        .offset = {0, 0},
+        .extent = extent
+    };
+
+    vkCmdSetViewport(cmd, 0, 1, &viewport);
+    vkCmdSetScissor(cmd, 0, 1, &scissor);
+
+
+    vkCmdDraw(cmd, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
 
@@ -185,7 +225,13 @@ void Application::drawFrame() {
         .pImageIndices = &imageIndex
     };
 
-    vkQueuePresentKHR(m_device->getPresentQueue(), &presentInfo);
+    result = vkQueuePresentKHR(m_device->getPresentQueue(), &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_framebufferResized) {
+        m_framebufferResized = false;
+        recreateSwapchain();
+    } else if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to present swapchain image.");
+    }
 
     // Advance frame
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -193,20 +239,20 @@ void Application::drawFrame() {
 
 void Application::cleanup() {
     if (m_device) {
-        // Wait for the GPU to finish all work before tearing down resources
         vkDeviceWaitIdle(m_device->getDevice());
     }
 
-    // Destroy in reverse order of creation
-    m_vertexBuffer.reset();     // destroys the buffer
-    m_syncObjects.reset();      // destroys semaphores, fences
-    m_commandManager.reset();   // destroys command pool + command buffers
-    m_framebuffer.reset();      // destroys VkFramebuffer
-    m_renderPass.reset();       // destroys VkRenderPass
-    m_swapchain.reset();        // destroys image views + swapchain
-    m_device.reset();           // destroys logical device + surface
-    m_debugMessenger.reset();   // destroys debug messenger
-    m_vulkanInstance.reset();   // destroys VkInstance
+    // Destroy objects in reverse creation order
+    m_vertexBuffer.reset();     // Must go before device
+    m_pipeline.reset();         // Before render pass and device
+    m_syncObjects.reset();      // Before device
+    m_commandManager.reset();   // Before device
+    m_framebuffer.reset();      // Before render pass
+    m_renderPass.reset();       // Before device
+    m_swapchain.reset();        // Before device
+    m_device.reset();           // Now it's safe to destroy the device
+    m_debugMessenger.reset();   // Instance still valid here
+    m_vulkanInstance.reset();   // Last to be destroyed
 
     if (m_window) {
         glfwDestroyWindow(m_window);
@@ -216,3 +262,62 @@ void Application::cleanup() {
     glfwTerminate();
 }
 
+void Application::recreateSwapchain() {
+    // Wait for all operations to complete before recreating
+    vkDeviceWaitIdle(m_device->getDevice());
+
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(m_window, &width, &height);
+
+    // Wait until window is non-zero
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(m_window, &width, &height);
+        glfwWaitEvents();
+    }
+
+    vkDeviceWaitIdle(m_device->getDevice());
+
+    // Destroy old
+    m_framebuffer.reset();
+    m_renderPass.reset();
+    m_swapchain.reset();
+
+    // Recreate
+    const auto& indices = m_device->getQueueIndices();
+    auto oldSwapchain = std::move(m_swapchain);
+
+    m_swapchain = std::make_unique<VulkanSwapchain>(
+        m_device->getPhysicalDevice(),
+        m_device->getDevice(),
+        m_device->getSurface(),
+        indices.graphics.value(),
+        indices.present.value(),
+        static_cast<uint32_t>(width),
+        static_cast<uint32_t>(height),
+        oldSwapchain ? oldSwapchain->get() : VK_NULL_HANDLE
+    );
+
+    m_renderPass = std::make_unique<VulkanRenderPass>(
+        m_device->getDevice(),
+        m_swapchain->getImageFormat()
+    );
+
+    m_framebuffer = std::make_unique<VulkanFramebuffer>(
+        m_device->getDevice(),
+        m_renderPass->get(),
+        m_swapchain->getImageViews(),
+        m_swapchain->getExtent()
+    );
+
+    m_pipeline.reset();
+    m_pipeline = std::make_unique<VulkanPipeline>(
+        m_device->getDevice(),
+        m_renderPass->get()
+    );
+
+}
+
+void Application::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    app->m_framebufferResized = true;
+}

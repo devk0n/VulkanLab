@@ -15,7 +15,7 @@ VulkanCommandManager::VulkanCommandManager(VkDevice device, uint32_t queueFamily
         throw std::runtime_error("Failed to create command pool.");
     }
 
-    INFO("Command pool created.");
+    DEBUG("Command pool created.");
 
     m_commandBuffers.resize(bufferCount);
 
@@ -30,12 +30,19 @@ VulkanCommandManager::VulkanCommandManager(VkDevice device, uint32_t queueFamily
         throw std::runtime_error("Failed to allocate command buffers.");
     }
 
-    INFO("Allocated ", bufferCount, " command buffers.");
+    DEBUG("Allocated ", bufferCount, " command buffers.");
 }
 
 VulkanCommandManager::~VulkanCommandManager() {
+    if (!m_commandBuffers.empty()) {
+        vkFreeCommandBuffers(m_device, m_commandPool,
+                             static_cast<uint32_t>(m_commandBuffers.size()),
+                             m_commandBuffers.data());
+        m_commandBuffers.clear();
+    }
+
     if (m_commandPool != VK_NULL_HANDLE) {
         vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-        INFO("Command pool destroyed.");
+        DEBUG("Command pool destroyed.");
     }
 }

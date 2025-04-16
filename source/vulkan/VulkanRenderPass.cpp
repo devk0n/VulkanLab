@@ -50,12 +50,12 @@ VulkanRenderPass::VulkanRenderPass(VkDevice device, VkFormat imageFormat)
         throw std::runtime_error("Failed to create render pass.");
     }
 
-    INFO("Render pass created.");
+    DEBUG("Render pass created.");
 }
 
 VulkanRenderPass::~VulkanRenderPass() {
     if (m_renderPass != VK_NULL_HANDLE) {
         vkDestroyRenderPass(m_device, m_renderPass, nullptr);
-        INFO("Render pass destroyed.");
+        DEBUG("Render pass destroyed.");
     }
 }

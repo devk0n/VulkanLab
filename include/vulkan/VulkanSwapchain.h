@@ -14,7 +14,8 @@ public:
         uint32_t graphicsQueueFamily,
         uint32_t presentQueueFamily,
         uint32_t windowWidth,
-        uint32_t windowHeight
+        uint32_t windowHeight,
+        VkSwapchainKHR oldSwapchain = VK_NULL_HANDLE
     );
 
     ~VulkanSwapchain();

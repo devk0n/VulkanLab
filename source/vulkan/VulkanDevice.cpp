@@ -23,12 +23,12 @@ VulkanDevice::VulkanDevice(VkInstance instance, GLFWwindow* window)
 VulkanDevice::~VulkanDevice() {
     if (m_surface != VK_NULL_HANDLE) {
         vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-        INFO("Surface destroyed.");
+        DEBUG("Surface destroyed.");
     }
 
     if (m_device != VK_NULL_HANDLE) {
         vkDestroyDevice(m_device, nullptr);
-        INFO("Logical device destroyed.");
+        DEBUG("Logical device destroyed.");
     }
 
 }
@@ -37,7 +37,7 @@ void VulkanDevice::createSurface(GLFWwindow* window) {
     if (glfwCreateWindowSurface(m_instance, window, nullptr, &m_surface) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create window surface.");
     }
-    INFO("Surface created.");
+    DEBUG("Surface created.");
 }
 
 void VulkanDevice::pickPhysicalDevice() {
@@ -53,7 +53,7 @@ void VulkanDevice::pickPhysicalDevice() {
         if (indices.isComplete()) {
             m_physicalDevice = device;
             m_queueIndices = indices;
-            INFO("Physical device selected.");
+            DEBUG("Physical device selected.");
             return;
         }
     }
@@ -122,7 +122,7 @@ void VulkanDevice::createLogicalDevice() {
         throw std::runtime_error("Failed to create logical device.");
     }
 
-    INFO("Logical device created.");
+    DEBUG("Logical device created.");
 
     vkGetDeviceQueue(m_device, m_queueIndices.graphics.value(), 0, &m_graphicsQueue);
     vkGetDeviceQueue(m_device, m_queueIndices.present.value(), 0, &m_presentQueue);

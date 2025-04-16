@@ -32,12 +32,12 @@ VulkanFramebuffer::VulkanFramebuffer(
         m_framebuffers.push_back(fb);
     }
 
-    INFO("Created ", m_framebuffers.size(), " framebuffers.");
+    DEBUG("Created ", m_framebuffers.size(), " framebuffers.");
 }
 
 VulkanFramebuffer::~VulkanFramebuffer() {
     for (auto fb : m_framebuffers) {
         vkDestroyFramebuffer(m_device, fb, nullptr);
     }
-    INFO("Framebuffers destroyed.");
+    DEBUG("Framebuffers destroyed.");
 }

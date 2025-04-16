@@ -52,13 +52,13 @@ VulkanInstance::VulkanInstance(bool enableValidation)
         throw std::runtime_error(std::format("Failed to create Vulkan instance. VkResult: {}", static_cast<int>(result)));
         }
 
-    INFO("Vulkan instance created successfully.");
+    DEBUG("Vulkan instance created successfully.");
 }
 
 VulkanInstance::~VulkanInstance() {
     if (m_instance != VK_NULL_HANDLE) {
         vkDestroyInstance(m_instance, nullptr);
-        INFO("Vulkan instance destroyed.");
+        DEBUG("Vulkan instance destroyed.");
     }
 }
 

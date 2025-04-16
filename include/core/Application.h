@@ -13,6 +13,7 @@ class VulkanFramebuffer;
 class VulkanCommandManager;
 class VulkanSyncObjects;
 class VulkanBuffer;
+class VulkanPipeline;
 
 class Application {
 public:
@@ -29,7 +30,12 @@ private:
 
     void cleanup();
 
+    void recreateSwapchain();
+
+    static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+
     GLFWwindow* m_window = nullptr;
+    bool m_framebufferResized = false;
     std::unique_ptr<VulkanInstance> m_vulkanInstance;
     std::unique_ptr<VulkanDebugMessenger> m_debugMessenger;
     std::unique_ptr<VulkanDevice> m_device;
@@ -41,6 +47,8 @@ private:
     size_t m_currentFrame = 0;
     std::unique_ptr<VulkanSyncObjects> m_syncObjects;
     std::unique_ptr<VulkanBuffer> m_vertexBuffer;
+    std::unique_ptr<VulkanPipeline> m_pipeline;
+
 };
 
 #endif // APPLICATION_H

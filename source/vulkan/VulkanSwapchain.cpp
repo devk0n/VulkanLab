@@ -11,7 +11,8 @@ VulkanSwapchain::VulkanSwapchain(
     uint32_t graphicsQueueFamily,
     uint32_t presentQueueFamily,
     uint32_t windowWidth,
-    uint32_t windowHeight
+    uint32_t windowHeight,
+    VkSwapchainKHR oldSwapchain
 ) : m_device(device) {
 
     VkSurfaceCapabilitiesKHR capabilities;
@@ -39,6 +40,7 @@ VulkanSwapchain::VulkanSwapchain(
 
     VkSwapchainCreateInfoKHR createInfo {
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .oldSwapchain = oldSwapchain,
         .surface = surface,
         .minImageCount = imageCount,
         .imageFormat = surfaceFormat.format,
@@ -71,7 +73,7 @@ VulkanSwapchain::VulkanSwapchain(
     vkGetSwapchainImagesKHR(device, m_swapchain, &imageCount, m_images.data());
 
     createImageViews();
-    INFO("Swapchain created with ", m_images.size(),  " images.");
+    DEBUG("Swapchain created with ", m_images.size(),  " images.");
 }
 
 VulkanSwapchain::~VulkanSwapchain() {
@@ -81,7 +83,7 @@ VulkanSwapchain::~VulkanSwapchain() {
     if (m_swapchain) {
         vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
     }
-    INFO("Swapchain destroyed.");
+    DEBUG("Swapchain destroyed.");
 }
 
 VkSurfaceFormatKHR VulkanSwapchain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats) {

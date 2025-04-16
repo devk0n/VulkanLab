@@ -31,6 +31,8 @@ set(SOURCES
         source/vulkan/VulkanSyncObjects.cpp
         include/vulkan/VulkanBuffer.h
         source/vulkan/VulkanBuffer.cpp
+        include/vulkan/VulkanPipeline.h
+        source/vulkan/VulkanPipeline.cpp
 )
 
 # Main executable
