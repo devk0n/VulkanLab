@@ -97,13 +97,14 @@ VkSurfaceFormatKHR VulkanSwapchain::chooseSurfaceFormat(const std::vector<VkSurf
 }
 
 VkPresentModeKHR VulkanSwapchain::choosePresentMode(const std::vector<VkPresentModeKHR>& modes) {
-    for (const auto& mode : modes) {
-        if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
-            return mode; // Triple buffering
-        }
+    // IMMEDIATE avoids driver-side vsync or mailbox buffering
+    for (auto mode : modes) {
+        if (mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+            return mode;
     }
-    return VK_PRESENT_MODE_FIFO_KHR; // V-sync fallback
+    return VK_PRESENT_MODE_FIFO_KHR; // fallback
 }
+
 
 VkExtent2D VulkanSwapchain::chooseExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height) {
     if (capabilities.currentExtent.width != UINT32_MAX) return capabilities.currentExtent;

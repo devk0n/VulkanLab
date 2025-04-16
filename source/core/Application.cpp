@@ -50,17 +50,25 @@ void Application::initialize() {
         m_framebufferResized = true;
     });
 
-    m_vulkanInstance = std::make_unique<VulkanInstance>(true);
-    m_debugMessenger = std::make_unique<VulkanDebugMessenger>(m_vulkanInstance->get());
+    // Toggle validation layers on/off here:
+    m_enableValidation = false;
+
+    // Create instance (with or without VK_EXT_debug_utils)
+    m_vulkanInstance = std::make_unique<VulkanInstance>(m_enableValidation);
+
+    // Only hook up debug messenger if validation is enabled
+    if (m_enableValidation) {
+        m_debugMessenger = std::make_unique<VulkanDebugMessenger>(m_vulkanInstance->get());
+    }
     m_device = std::make_unique<VulkanDevice>(m_vulkanInstance->get(), *m_windowManager);
 
-    const auto& indices = m_device->getQueueIndices();
+    const auto&[graphics, present] = m_device->getQueueIndices();
     m_swapchain = std::make_unique<VulkanSwapchain>(
         m_device->getPhysicalDevice(),
         m_device->getDevice(),
         m_device->getSurface(),
-        indices.graphics.value(),
-        indices.present.value(),
+        graphics.value(),
+        present.value(),
         1280, 720
     );
 
@@ -162,7 +170,7 @@ void Application::drawFrame() {
     };
     vkBeginCommandBuffer(cmd, &beginInfo);
 
-    VkClearValue clearColor = { .color = {{ 0.0f, 0.0f, 0.0f, 1.0f }} };
+    VkClearValue clearColor = { .color = {{ 0.1f, 0.1f, 0.1f, 1.0f }} };
 
     VkRenderPassBeginInfo renderPassInfo {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -179,6 +187,11 @@ void Application::drawFrame() {
     m_imguiLayer->beginFrame();
     ImGui::Begin("Debug Info");
     ImGui::Text("Hello from ImGui");
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Text("Frame index: %d", frameIndex);
+    ImGui::Text("Frame sync: %d", frameSync.imageAvailable);
+    ImGui::Text("Frame sync: %d", frameSync.renderFinished);
+    ImGui::Text("Frame sync: %d", frameSync.inFlight);
     ImGui::End();
 
     // Draw triangle
@@ -269,7 +282,12 @@ void Application::cleanup() {
     m_swapchain.reset();        // Before device
     m_imguiLayer.reset();
     m_device.reset();           // Now it's safe to destroy the device
-    m_debugMessenger.reset();   // Instance still valid here
+
+    // Only destroy debug messenger if we actually created it
+    if (m_enableValidation) {
+        m_debugMessenger.reset();   // Instance still valid here
+    }
+
     m_vulkanInstance.reset();   // Last to be destroyed
     m_windowManager.reset();    // Must go last, since it destroys the window
 
