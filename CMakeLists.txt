@@ -28,6 +28,10 @@ set(SOURCES
         source/vulkan/VulkanRenderPass.cpp
         include/vulkan/VulkanFramebuffer.h
         source/vulkan/VulkanFramebuffer.cpp
+        include/vulkan/VulkanCommandManager.h
+        source/vulkan/VulkanCommandManager.cpp
+        include/vulkan/VulkanSyncObjects.h
+        source/vulkan/VulkanSyncObjects.cpp
 )
 
 # Main executable

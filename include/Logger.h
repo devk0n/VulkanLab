@@ -26,7 +26,7 @@ public:
         constexpr Config()
             : showTimestamp(false),
               showLevel(true),
-              showSourceLocation(false),
+              showSourceLocation(true),
               enableColors(true) {}
 
         explicit constexpr Config(

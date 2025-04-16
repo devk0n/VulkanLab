@@ -9,10 +9,12 @@
 #include "Logger.h"
 
 namespace {
-consteval auto validationLayers() {
-    return std::to_array({
-        "VK_LAYER_KHRONOS_validation"
-    });
+const std::array validation_layers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+const std::array<const char*, validation_layers.size()>& validationLayers() {
+    return validation_layers;
 }
 }
 
@@ -34,13 +36,15 @@ VulkanInstance::VulkanInstance(bool enableValidation)
 
     const auto extensions = getRequiredExtensions();
 
-    VkInstanceCreateInfo createInfo {
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pApplicationInfo = &appInfo,
-        .enabledExtensionCount = static_cast<uint32_t>(extensions.size()),
-        .ppEnabledExtensionNames = extensions.data(),
-        .enabledLayerCount = m_enableValidation ? static_cast<uint32_t>(validationLayers().size()) : 0,
-        .ppEnabledLayerNames = m_enableValidation ? validationLayers().data() : nullptr,
+    const VkInstanceCreateInfo createInfo {
+        .sType                      = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext                      = VK_NULL_HANDLE,
+        .flags                      = 0,
+        .pApplicationInfo           = &appInfo,
+        .enabledLayerCount          = m_enableValidation ? static_cast<uint32_t>(validationLayers().size()) : 0,
+        .ppEnabledLayerNames        = m_enableValidation ? validationLayers().data() : VK_NULL_HANDLE,
+        .enabledExtensionCount      = static_cast<uint32_t>(extensions.size()),
+        .ppEnabledExtensionNames    = extensions.data(),
     };
 
     if (const auto result = vkCreateInstance(&createInfo, nullptr, &m_instance);

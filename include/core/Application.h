@@ -10,6 +10,8 @@ class VulkanDevice;
 class VulkanSwapchain;
 class VulkanRenderPass;
 class VulkanFramebuffer;
+class VulkanCommandManager;
+class VulkanSyncObjects;
 
 class Application {
 public:
@@ -21,6 +23,9 @@ public:
 private:
     void initialize();
     void mainLoop();
+
+    void drawFrame();
+
     void cleanup();
 
     GLFWwindow* m_window = nullptr;
@@ -30,6 +35,10 @@ private:
     std::unique_ptr<VulkanSwapchain> m_swapchain;
     std::unique_ptr<VulkanRenderPass> m_renderPass;
     std::unique_ptr<VulkanFramebuffer> m_framebuffer;
+    std::unique_ptr<VulkanCommandManager> m_commandManager;
+    static constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
+    size_t m_currentFrame = 0;
+    std::unique_ptr<VulkanSyncObjects> m_syncObjects;
 };
 
 #endif // APPLICATION_H
