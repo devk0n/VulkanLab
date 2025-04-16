@@ -1,4 +1,7 @@
 #include "Application.h"
+
+#include <cstring>
+
 #include "Logger.h"
 #include "VulkanCommandManager.h"
 #include "VulkanInstance.h"
@@ -8,6 +11,15 @@
 #include "VulkanFramebuffer.h"
 #include "VulkanRenderPass.h"
 #include "VulkanSyncObjects.h"
+
+#include "Vertex.h"
+#include "VulkanBuffer.h"
+
+std::vector<Vertex> vertices = {
+    { {  0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },  // Bottom
+    { {  0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },  // Right
+    { { -0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f } }   // Left
+};
 
 Application::Application() {
     initialize();
@@ -74,6 +86,20 @@ void Application::initialize() {
         m_device->getDevice(),
         MAX_FRAMES_IN_FLIGHT
     );
+
+    m_vertexBuffer = std::make_unique<VulkanBuffer>(
+        m_device->getDevice(),
+        m_device->getPhysicalDevice(),
+        sizeof(Vertex) * vertices.size(),
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    );
+
+    // Upload vertex data
+    void* data;
+    vkMapMemory(m_device->getDevice(), m_vertexBuffer->getMemory(), 0, VK_WHOLE_SIZE, 0, &data);
+    memcpy(data, vertices.data(), sizeof(Vertex) * vertices.size());
+    vkUnmapMemory(m_device->getDevice(), m_vertexBuffer->getMemory());
 }
 
 void Application::mainLoop() {
@@ -166,22 +192,27 @@ void Application::drawFrame() {
 }
 
 void Application::cleanup() {
-    if (m_device && m_device->getDevice()) {
+    if (m_device) {
+        // Wait for the GPU to finish all work before tearing down resources
         vkDeviceWaitIdle(m_device->getDevice());
     }
 
-    m_syncObjects.reset();
-    m_commandManager.reset();
-    m_framebuffer.reset();
-    m_renderPass.reset();
-    m_swapchain.reset();
-    m_device.reset();
-    m_debugMessenger.reset();
-    m_vulkanInstance.reset();
+    // Destroy in reverse order of creation
+    m_vertexBuffer.reset();     // destroys the buffer
+    m_syncObjects.reset();      // destroys semaphores, fences
+    m_commandManager.reset();   // destroys command pool + command buffers
+    m_framebuffer.reset();      // destroys VkFramebuffer
+    m_renderPass.reset();       // destroys VkRenderPass
+    m_swapchain.reset();        // destroys image views + swapchain
+    m_device.reset();           // destroys logical device + surface
+    m_debugMessenger.reset();   // destroys debug messenger
+    m_vulkanInstance.reset();   // destroys VkInstance
 
     if (m_window) {
         glfwDestroyWindow(m_window);
         m_window = nullptr;
     }
+
     glfwTerminate();
 }
+

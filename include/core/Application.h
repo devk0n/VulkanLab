@@ -12,6 +12,7 @@ class VulkanRenderPass;
 class VulkanFramebuffer;
 class VulkanCommandManager;
 class VulkanSyncObjects;
+class VulkanBuffer;
 
 class Application {
 public:
@@ -39,6 +40,7 @@ private:
     static constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
     size_t m_currentFrame = 0;
     std::unique_ptr<VulkanSyncObjects> m_syncObjects;
+    std::unique_ptr<VulkanBuffer> m_vertexBuffer;
 };
 
 #endif // APPLICATION_H

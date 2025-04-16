@@ -12,26 +12,25 @@ find_package(Vulkan REQUIRED)
 # Find GLFW
 find_package(glfw3 REQUIRED)
 
+# Find GLM
+find_package(glm REQUIRED)
+
 # Project sources
 set(SOURCES
         source/main.cpp
-        source/vulkan/VulkanInstance.cpp
-        include/core/Application.h
+
         source/core/Application.cpp
-        include/vulkan/VulkanDebugMessenger.h
+
+        source/vulkan/VulkanInstance.cpp
         source/vulkan/VulkanDebugMessenger.cpp
-        include/vulkan/VulkanDevice.h
         source/vulkan/VulkanDevice.cpp
-        include/vulkan/VulkanSwapchain.h
         source/vulkan/VulkanSwapchain.cpp
-        include/vulkan/VulkanRenderPass.h
         source/vulkan/VulkanRenderPass.cpp
-        include/vulkan/VulkanFramebuffer.h
         source/vulkan/VulkanFramebuffer.cpp
-        include/vulkan/VulkanCommandManager.h
         source/vulkan/VulkanCommandManager.cpp
-        include/vulkan/VulkanSyncObjects.h
         source/vulkan/VulkanSyncObjects.cpp
+        include/vulkan/VulkanBuffer.h
+        source/vulkan/VulkanBuffer.cpp
 )
 
 # Main executable
@@ -41,14 +40,15 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/include/core
-        include/vulkan
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/vulkan
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/source/core
-        source/vulkan
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/vulkan
 )
 
 # Link everything
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Vulkan::Vulkan
         glfw
+        glm
 )
