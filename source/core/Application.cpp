@@ -138,9 +138,9 @@ void Application::drawFrame() {
     const size_t frameIndex = m_currentFrame;
     const auto& frameSync = m_syncObjects->getFrameSync(frameIndex);
     const auto& commandBuffers = m_commandManager->getCommandBuffers();
-    const VkDevice device = m_device->getDevice();
-    const VkSwapchainKHR swapchain = m_swapchain->get();
-    const VkRenderPass renderPass = m_renderPass->get();
+    VkDevice device = m_device->getDevice();
+    VkSwapchainKHR swapchain = m_swapchain->get();
+    VkRenderPass renderPass = m_renderPass->get();
     const VkExtent2D extent = m_swapchain->getExtent();
     const auto& framebuffers = m_framebuffer->getFramebuffers();
 
@@ -170,7 +170,7 @@ void Application::drawFrame() {
     };
     vkBeginCommandBuffer(cmd, &beginInfo);
 
-    VkClearValue clearColor = { .color = {{ 0.1f, 0.1f, 0.1f, 1.0f }} };
+    VkClearValue clearColor = { .color = {{ 0.01f, 0.01, 0.01f, 1.0f }} };
 
     VkRenderPassBeginInfo renderPassInfo {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -187,11 +187,7 @@ void Application::drawFrame() {
     m_imguiLayer->beginFrame();
     ImGui::Begin("Debug Info");
     ImGui::Text("Hello from ImGui");
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Text("Frame index: %d", frameIndex);
-    ImGui::Text("Frame sync: %d", frameSync.imageAvailable);
-    ImGui::Text("Frame sync: %d", frameSync.renderFinished);
-    ImGui::Text("Frame sync: %d", frameSync.inFlight);
+    ImGui::Text("Application FPS: %.0f", ImGui::GetIO().Framerate);
     ImGui::End();
 
     // Draw triangle

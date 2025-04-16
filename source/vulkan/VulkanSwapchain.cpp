@@ -37,32 +37,32 @@ VulkanSwapchain::VulkanSwapchain(
     if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
         imageCount = capabilities.maxImageCount;
     }
+    uint32_t queueFamilies[] = { graphicsQueueFamily, presentQueueFamily };
 
     VkSwapchainCreateInfoKHR createInfo {
-        .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-        .oldSwapchain = oldSwapchain,
-        .surface = surface,
-        .minImageCount = imageCount,
-        .imageFormat = surfaceFormat.format,
-        .imageColorSpace = surfaceFormat.colorSpace,
-        .imageExtent = m_extent,
-        .imageArrayLayers = 1,
-        .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-        .preTransform = capabilities.currentTransform,
-        .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-        .presentMode = presentMode,
-        .clipped = VK_TRUE,
-        .oldSwapchain = VK_NULL_HANDLE,
+        .sType                  = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .pNext                  = nullptr,
+        .flags                  = 0,
+        .surface                = surface,
+        .minImageCount          = imageCount,
+        .imageFormat            = surfaceFormat.format,
+        .imageColorSpace        = surfaceFormat.colorSpace,
+        .imageExtent            = m_extent,
+        .imageArrayLayers       = 1,
+        .imageUsage             = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .imageSharingMode       = (graphicsQueueFamily != presentQueueFamily
+                                    ? VK_SHARING_MODE_CONCURRENT
+                                    : VK_SHARING_MODE_EXCLUSIVE),
+        .queueFamilyIndexCount  = (graphicsQueueFamily != presentQueueFamily ? 2u : 0u),
+        .pQueueFamilyIndices    = (graphicsQueueFamily != presentQueueFamily
+                                    ? queueFamilies
+                                    : nullptr),
+        .preTransform           = capabilities.currentTransform,
+        .compositeAlpha         = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        .presentMode            = presentMode,
+        .clipped                = VK_TRUE,
+        .oldSwapchain           = oldSwapchain,
     };
-
-    uint32_t queueFamilies[] = { graphicsQueueFamily, presentQueueFamily };
-    if (graphicsQueueFamily != presentQueueFamily) {
-        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        createInfo.queueFamilyIndexCount = 2;
-        createInfo.pQueueFamilyIndices = queueFamilies;
-    } else {
-        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    }
 
     if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_swapchain) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create swapchain.");
