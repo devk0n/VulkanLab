@@ -1,9 +1,0 @@
-{
-  "revision": 0,
-  "rules": [
-    {
-      "primary-output": "CMakeFiles/VulkanLab.dir/source/vulkan/VulkanSwapchain.cpp.o"
-    }
-  ],
-  "version": 1
-}
