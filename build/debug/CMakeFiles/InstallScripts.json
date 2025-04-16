@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/devkon/CLionProjects/VulkanLab/build/debug/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

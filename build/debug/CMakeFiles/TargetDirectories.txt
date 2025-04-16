@@ -1,0 +1,3 @@
+/home/devkon/CLionProjects/VulkanLab/build/debug/CMakeFiles/VulkanLab.dir
+/home/devkon/CLionProjects/VulkanLab/build/debug/CMakeFiles/edit_cache.dir
+/home/devkon/CLionProjects/VulkanLab/build/debug/CMakeFiles/rebuild_cache.dir

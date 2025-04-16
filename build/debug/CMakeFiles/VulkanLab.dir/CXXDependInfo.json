@@ -1,0 +1,70 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "Clang",
+	"compiler-simulate-id" : "",
+	"config" : "Debug",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "/home/devkon/CLionProjects/VulkanLab/build/debug",
+	"dir-cur-src" : "/home/devkon/CLionProjects/VulkanLab",
+	"dir-top-bld" : "/home/devkon/CLionProjects/VulkanLab/build/debug",
+	"dir-top-src" : "/home/devkon/CLionProjects/VulkanLab",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"/home/devkon/CLionProjects/VulkanLab/include",
+		"/home/devkon/CLionProjects/VulkanLab/include/core",
+		"/home/devkon/CLionProjects/VulkanLab/include/vulkan",
+		"/home/devkon/CLionProjects/VulkanLab/source",
+		"/home/devkon/CLionProjects/VulkanLab/source/core",
+		"/home/devkon/CLionProjects/VulkanLab/source/vulkan"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "/home/devkon/CLionProjects/VulkanLab/build/debug/CMakeFiles/VulkanLab.dir",
+	"sources" : 
+	{
+		"CMakeFiles/VulkanLab.dir/source/core/Application.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/core/Application.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/main.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/main.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanDebugMessenger.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanDebugMessenger.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanDevice.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanDevice.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanFramebuffer.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanFramebuffer.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanInstance.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanInstance.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanRenderPass.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanRenderPass.cpp"
+		},
+		"CMakeFiles/VulkanLab.dir/source/vulkan/VulkanSwapchain.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/devkon/CLionProjects/VulkanLab/source/vulkan/VulkanSwapchain.cpp"
+		}
+	}
+}
