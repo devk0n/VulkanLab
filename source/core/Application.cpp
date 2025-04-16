@@ -1,8 +1,11 @@
 #include "Application.h"
 
 #include <cstring>
+#include <imgui.h>
 
 #include "Logger.h"
+#include "WindowManager.h"
+#include "ImGuiLayer.h"
 #include "VulkanCommandManager.h"
 #include "VulkanInstance.h"
 #include "VulkanDebugMessenger.h"
@@ -11,10 +14,10 @@
 #include "VulkanFramebuffer.h"
 #include "VulkanRenderPass.h"
 #include "VulkanSyncObjects.h"
-
 #include "Vertex.h"
 #include "VulkanBuffer.h"
 #include "VulkanPipeline.h"
+
 
 std::vector<Vertex> vertices = {
     { {  0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },  // Bottom
@@ -40,23 +43,16 @@ void Application::initialize() {
         throw std::runtime_error("Failed to initialize GLFW.");
     }
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    m_windowManager = std::make_unique<WindowManager>();
+    m_windowManager->create(1280, 720, "VulkanLab");
 
-    m_window = glfwCreateWindow(1280, 720, "VulkanLab", nullptr, nullptr);
-    if (!m_window) {
-        ERROR("Failed to create GLFW window.");
-        throw std::runtime_error("Failed to create window.");
-    }
-
-    glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
-
-    DEBUG("GLFW window created.");
+    m_windowManager->setResizeCallback([this](int w, int h) {
+        m_framebufferResized = true;
+    });
 
     m_vulkanInstance = std::make_unique<VulkanInstance>(true);
     m_debugMessenger = std::make_unique<VulkanDebugMessenger>(m_vulkanInstance->get());
-    m_device = std::make_unique<VulkanDevice>(m_vulkanInstance->get(), m_window);
+    m_device = std::make_unique<VulkanDevice>(m_vulkanInstance->get(), *m_windowManager);
 
     const auto& indices = m_device->getQueueIndices();
     m_swapchain = std::make_unique<VulkanSwapchain>(
@@ -96,6 +92,17 @@ void Application::initialize() {
         m_renderPass->get()
     );
 
+    m_imguiLayer = std::make_unique<ImGuiLayer>(
+        m_windowManager->get(),
+        m_vulkanInstance->get(),
+        m_device->getDevice(),
+        m_device->getPhysicalDevice(),
+        m_device->getGraphicsQueue(),
+        m_device->getQueueIndices().graphics.value(),
+        m_renderPass->get(),
+        static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT)
+    );
+
     m_vertexBuffer = std::make_unique<VulkanBuffer>(
         m_device->getDevice(),
         m_device->getPhysicalDevice(),
@@ -113,7 +120,7 @@ void Application::initialize() {
 }
 
 void Application::mainLoop() {
-    while (!glfwWindowShouldClose(m_window)) {
+    while (!m_windowManager->shouldClose()) {
         glfwPollEvents();
         drawFrame();
     }
@@ -168,6 +175,13 @@ void Application::drawFrame() {
 
     vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+    // Start GUI
+    m_imguiLayer->beginFrame();
+    ImGui::Begin("Debug Info");
+    ImGui::Text("Hello from ImGui");
+    ImGui::End();
+
+    // Draw triangle
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->get());
 
     VkDeviceSize offset = 0;
@@ -193,6 +207,9 @@ void Application::drawFrame() {
 
 
     vkCmdDraw(cmd, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+
+    // End GUI
+    m_imguiLayer->endFrame(cmd);
 
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
@@ -250,14 +267,11 @@ void Application::cleanup() {
     m_framebuffer.reset();      // Before render pass
     m_renderPass.reset();       // Before device
     m_swapchain.reset();        // Before device
+    m_imguiLayer.reset();
     m_device.reset();           // Now it's safe to destroy the device
     m_debugMessenger.reset();   // Instance still valid here
     m_vulkanInstance.reset();   // Last to be destroyed
-
-    if (m_window) {
-        glfwDestroyWindow(m_window);
-        m_window = nullptr;
-    }
+    m_windowManager.reset();    // Must go last, since it destroys the window
 
     glfwTerminate();
 }
@@ -267,11 +281,11 @@ void Application::recreateSwapchain() {
     vkDeviceWaitIdle(m_device->getDevice());
 
     int width = 0, height = 0;
-    glfwGetFramebufferSize(m_window, &width, &height);
+    glfwGetFramebufferSize(m_windowManager->get(), &width, &height);
 
     // Wait until window is non-zero
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(m_window, &width, &height);
+        glfwGetFramebufferSize(m_windowManager->get(), &width, &height);
         glfwWaitEvents();
     }
 

@@ -4,6 +4,8 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 
+class WindowManager;
+class ImGuiLayer;
 class VulkanInstance;
 class VulkanDebugMessenger;
 class VulkanDevice;
@@ -34,7 +36,9 @@ private:
 
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
-    GLFWwindow* m_window = nullptr;
+
+    std::unique_ptr<WindowManager> m_windowManager;
+    std::unique_ptr<ImGuiLayer> m_imguiLayer;
     bool m_framebufferResized = false;
     std::unique_ptr<VulkanInstance> m_vulkanInstance;
     std::unique_ptr<VulkanDebugMessenger> m_debugMessenger;

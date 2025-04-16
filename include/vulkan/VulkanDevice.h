@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <optional>
 
+class WindowManager;
+
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphics;
     std::optional<uint32_t> present;
@@ -16,7 +18,7 @@ struct QueueFamilyIndices {
 
 class VulkanDevice {
 public:
-    VulkanDevice(VkInstance instance, GLFWwindow* window);
+    VulkanDevice(VkInstance instance, const WindowManager& windowManager);
     ~VulkanDevice();
 
     VulkanDevice(const VulkanDevice&) = delete;

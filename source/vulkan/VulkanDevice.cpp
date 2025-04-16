@@ -7,14 +7,16 @@
 #include <vector>
 #include <stdexcept>
 
+#include "WindowManager.h"
+
 const std::vector deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-VulkanDevice::VulkanDevice(VkInstance instance, GLFWwindow* window)
+VulkanDevice::VulkanDevice(VkInstance instance, const WindowManager& windowManager)
     : m_instance(instance)
 {
-    createSurface(window);
+    createSurface(windowManager.get());
     pickPhysicalDevice();
     createLogicalDevice();
 
@@ -37,7 +39,6 @@ void VulkanDevice::createSurface(GLFWwindow* window) {
     if (glfwCreateWindowSurface(m_instance, window, nullptr, &m_surface) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create window surface.");
     }
-    DEBUG("Surface created.");
 }
 
 void VulkanDevice::pickPhysicalDevice() {
