@@ -24,6 +24,5 @@ void WindowManager::create(uint32_t width, uint32_t height, const std::string& t
 
 void WindowManager::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto* self = static_cast<WindowManager*>(glfwGetWindowUserPointer(window));
-    if (self && self->m_resizeCallback)
-        self->m_resizeCallback(width, height);
+    if (self && self->m_resizeCallback) { self->m_resizeCallback(width, height); }
 }
