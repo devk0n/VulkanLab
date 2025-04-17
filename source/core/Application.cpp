@@ -50,22 +50,23 @@ void Application::initialize() {
         m_framebufferResized = true;
     });
 
-    // Toggle validation layers on/off here:
-    m_enableValidation = false;
+    m_config = std::make_unique<VulkanConfig>();
+    m_config->enableValidationLayers = false;
+    m_config->preferredPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 
-    // Create instance (with or without VK_EXT_debug_utils)
-    m_vulkanInstance = std::make_unique<VulkanInstance>(m_enableValidation);
+    m_vulkanInstance = std::make_unique<VulkanInstance>(*m_config);
 
-    // Only hook up debug messenger if validation is enabled
-    if (m_enableValidation) {
+    if (m_config->enableValidationLayers) {
         m_debugMessenger = std::make_unique<VulkanDebugMessenger>(m_vulkanInstance->get());
     }
+
     m_device = std::make_unique<VulkanDevice>(m_vulkanInstance->get(), *m_windowManager);
 
     const auto&[graphics, present] = m_device->getQueueIndices();
     m_swapchain = std::make_unique<VulkanSwapchain>(
         m_device->getPhysicalDevice(),
         m_device->getDevice(),
+        *m_config,
         m_device->getSurface(),
         graphics.value(),
         present.value(),
@@ -124,7 +125,6 @@ void Application::initialize() {
     vkMapMemory(m_device->getDevice(), m_vertexBuffer->getMemory(), 0, VK_WHOLE_SIZE, 0, &data);
     memcpy(data, vertices.data(), sizeof(Vertex) * vertices.size());
     vkUnmapMemory(m_device->getDevice(), m_vertexBuffer->getMemory());
-
 }
 
 void Application::mainLoop() {
@@ -150,14 +150,14 @@ void Application::drawFrame() {
 
     // Acquire image to render into
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(device, swapchain, UINT64_MAX,
-                                        frameSync.imageAvailable, VK_NULL_HANDLE, &imageIndex);
-
+    VkResult result = vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, frameSync.imageAvailable, VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapchain();
         return; // Skip this frame
-    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+    }
+
+    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("Failed to acquire swapchain image.");
     }
 
@@ -184,7 +184,7 @@ void Application::drawFrame() {
     vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     // Start GUI
-    m_imguiLayer->beginFrame();
+    ImGuiLayer::beginFrame();
     ImGui::Begin("Debug Info");
     ImGui::Text("Hello from ImGui");
     ImGui::Text("Application FPS: %.0f", ImGui::GetIO().Framerate);
@@ -218,7 +218,7 @@ void Application::drawFrame() {
     vkCmdDraw(cmd, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
     // End GUI
-    m_imguiLayer->endFrame(cmd);
+    ImGuiLayer::endFrame(cmd);
 
     vkCmdEndRenderPass(cmd);
     vkEndCommandBuffer(cmd);
@@ -280,7 +280,7 @@ void Application::cleanup() {
     m_device.reset();           // Now it's safe to destroy the device
 
     // Only destroy debug messenger if we actually created it
-    if (m_enableValidation) {
+    if (m_config->enableValidationLayers) {
         m_debugMessenger.reset();   // Instance still valid here
     }
 
@@ -317,6 +317,7 @@ void Application::recreateSwapchain() {
     m_swapchain = std::make_unique<VulkanSwapchain>(
         m_device->getPhysicalDevice(),
         m_device->getDevice(),
+        *m_config,
         m_device->getSurface(),
         indices.graphics.value(),
         indices.present.value(),

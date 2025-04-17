@@ -7,6 +7,7 @@
 VulkanSwapchain::VulkanSwapchain(
     VkPhysicalDevice physicalDevice,
     VkDevice device,
+    const VulkanConfig& config,
     VkSurfaceKHR surface,
     uint32_t graphicsQueueFamily,
     uint32_t presentQueueFamily,
@@ -86,14 +87,13 @@ VulkanSwapchain::~VulkanSwapchain() {
     DEBUG("Swapchain destroyed.");
 }
 
-VkSurfaceFormatKHR VulkanSwapchain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats) {
-    for (const auto& format : formats) {
-        if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
-            format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+VkSurfaceFormatKHR VulkanSwapchain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const {
+    for (const auto& format : availableFormats) {
+        if (format.format == m_config.preferredSurfaceFormat) {
             return format;
         }
     }
-    return formats[0];
+    return availableFormats[0]; // Fallback
 }
 
 VkPresentModeKHR VulkanSwapchain::choosePresentMode(const std::vector<VkPresentModeKHR>& modes) {

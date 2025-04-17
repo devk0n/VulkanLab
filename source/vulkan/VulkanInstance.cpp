@@ -4,6 +4,7 @@
 #include <expected>
 #include <stdexcept>
 #include <iostream>
+#include <utility>
 #include <bits/ranges_algo.h>
 #include <GLFW/glfw3.h>
 #include "Logger.h"
@@ -18,10 +19,8 @@ const std::array<const char*, validation_layers.size()>& validationLayers() {
 }
 }
 
-VulkanInstance::VulkanInstance(bool enableValidation)
-    : m_enableValidation(enableValidation)
-{
-    if (m_enableValidation && !checkValidationLayerSupport()) {
+VulkanInstance::VulkanInstance(VulkanConfig config) : m_config(std::move(config)) {
+    if (m_config.enableValidationLayers && !checkValidationLayerSupport()) {
         throw std::runtime_error("Validation layers requested but not available.");
     }
 
@@ -41,15 +40,15 @@ VulkanInstance::VulkanInstance(bool enableValidation)
         .pNext                      = VK_NULL_HANDLE,
         .flags                      = 0,
         .pApplicationInfo           = &appInfo,
-        .enabledLayerCount          = m_enableValidation ? static_cast<uint32_t>(validationLayers().size()) : 0,
-        .ppEnabledLayerNames        = m_enableValidation ? validationLayers().data() : VK_NULL_HANDLE,
+        .enabledLayerCount          = m_config.enableValidationLayers ? static_cast<uint32_t>(validationLayers().size()) : 0,
+        .ppEnabledLayerNames        = m_config.enableValidationLayers ? validationLayers().data() : VK_NULL_HANDLE,
         .enabledExtensionCount      = static_cast<uint32_t>(extensions.size()),
         .ppEnabledExtensionNames    = extensions.data(),
     };
 
     if (const auto result = vkCreateInstance(&createInfo, nullptr, &m_instance);
         result != VK_SUCCESS || m_instance == VK_NULL_HANDLE) {
-        throw std::runtime_error(std::format("Failed to create Vulkan instance. VkResult: {}", static_cast<int>(result)));
+            throw std::runtime_error(std::format("Failed to create Vulkan instance. VkResult: {}", static_cast<int>(result)));
         }
 
     DEBUG("Vulkan instance created successfully.");
@@ -67,14 +66,14 @@ std::vector<const char*> VulkanInstance::getRequiredExtensions() const {
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&count);
     std::vector extensions(glfwExtensions, glfwExtensions + count);
 
-    if (m_enableValidation) {
+    if (m_config.enableValidationLayers) {
         extensions.push_back("VK_EXT_debug_utils");
     }
 
     return extensions;
 }
 
-bool VulkanInstance::checkValidationLayerSupport() const {
+bool VulkanInstance::checkValidationLayerSupport() {
     uint32_t layerCount = 0;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -87,7 +86,7 @@ bool VulkanInstance::checkValidationLayerSupport() const {
         });
 
         if (!found) {
-            WARN("Missing validation layer: {}", requested);
+            WARN("Missing validation layer: ", requested);
             return false;
         }
     }

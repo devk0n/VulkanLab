@@ -55,6 +55,7 @@ set(SOURCES
         # ImGui backends
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+        include/vulkan/VulkanConfig.h
 )
 
 # Main executable

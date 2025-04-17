@@ -12,8 +12,8 @@ public:
     VulkanBuffer(const VulkanBuffer&) = delete;
     VulkanBuffer& operator=(const VulkanBuffer&) = delete;
 
-    VkBuffer get() const { return m_buffer; }
-    VkDeviceMemory getMemory() const { return m_memory; }
+    [[nodiscard]] VkBuffer get() const { return m_buffer; }
+    [[nodiscard]] VkDeviceMemory getMemory() const { return m_memory; }
 
 private:
     VkDevice m_device;

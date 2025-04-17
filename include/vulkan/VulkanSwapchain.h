@@ -5,11 +5,14 @@
 #include <vector>
 #include <cstdint>
 
+#include "VulkanConfig.h"
+
 class VulkanSwapchain {
 public:
     VulkanSwapchain(
         VkPhysicalDevice physicalDevice,
         VkDevice device,
+        const VulkanConfig& config,
         VkSurfaceKHR surface,
         uint32_t graphicsQueueFamily,
         uint32_t presentQueueFamily,
@@ -30,15 +33,16 @@ public:
 
 private:
     VkDevice m_device;
+    VulkanConfig m_config;
     VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
     std::vector<VkImage> m_images;
     std::vector<VkImageView> m_imageViews;
     VkFormat m_imageFormat;
     VkExtent2D m_extent;
 
-    VkSurfaceFormatKHR chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
-    VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& modes);
-    VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height);
+    VkSurfaceFormatKHR chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
+    static VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& modes);
+    static VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height);
 
     void createImageViews();
 };

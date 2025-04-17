@@ -4,6 +4,7 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 
+struct VulkanConfig;
 class WindowManager;
 class ImGuiLayer;
 class VulkanInstance;
@@ -33,6 +34,8 @@ private:
     void recreateSwapchain();
     static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
 
+    std::unique_ptr<VulkanConfig> m_config;
+
     std::unique_ptr<WindowManager> m_windowManager;
     std::unique_ptr<ImGuiLayer> m_imguiLayer;
     bool m_framebufferResized = false;
@@ -48,7 +51,6 @@ private:
     std::unique_ptr<VulkanSyncObjects> m_syncObjects;
     std::unique_ptr<VulkanBuffer> m_vertexBuffer;
     std::unique_ptr<VulkanPipeline> m_pipeline;
-    bool m_enableValidation = true;
 
 };
 
