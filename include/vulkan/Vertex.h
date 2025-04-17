@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 
 struct Vertex {
-    glm::vec2 position;
+    glm::vec3 position;
     glm::vec3 color;
 
     static VkVertexInputBindingDescription getBindingDescription() {
@@ -22,17 +22,18 @@ struct Vertex {
             {
                 .location = 0,
                 .binding = 0,
-                .format = VK_FORMAT_R32G32_SFLOAT, // vec2
+                .format = VK_FORMAT_R32G32B32_SFLOAT, // vec3 instead of vec2
                 .offset = offsetof(Vertex, position)
             },
             {
                 .location = 1,
                 .binding = 0,
-                .format = VK_FORMAT_R32G32B32_SFLOAT, // vec3
+                .format = VK_FORMAT_R32G32B32_SFLOAT,
                 .offset = offsetof(Vertex, color)
             }
         }};
     }
 };
+
 
 #endif // VERTEX_H

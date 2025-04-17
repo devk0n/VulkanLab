@@ -14,7 +14,7 @@ void WindowManager::create(uint32_t width, uint32_t height, const std::string& t
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title.c_str(), nullptr, nullptr);
     if (!m_window)
         throw std::runtime_error("Failed to create GLFW window.");
 
