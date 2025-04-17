@@ -1,15 +1,19 @@
 #include "VulkanBuffer.h"
 #include <stdexcept>
 
-VulkanBuffer::VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice,
-                           VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-    : m_device(device)
-{
+VulkanBuffer::VulkanBuffer(
+    VkDevice device,
+    VkPhysicalDevice physicalDevice,
+    VkDeviceSize size,
+    VkBufferUsageFlags usage,
+    VkMemoryPropertyFlags properties)
+        : m_device(device) {
+
     VkBufferCreateInfo bufferInfo {
-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = size,
-        .usage = usage,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE
+        .sType          = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+        .size           = size,
+        .usage          = usage,
+        .sharingMode    = VK_SHARING_MODE_EXCLUSIVE
     };
 
     if (vkCreateBuffer(device, &bufferInfo, nullptr, &m_buffer) != VK_SUCCESS) {
@@ -41,7 +45,7 @@ uint32_t VulkanBuffer::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t 
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
-        if ((typeFilter & (1 << i)) &&
+        if (typeFilter & 1 << i &&
             (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             return i;
         }

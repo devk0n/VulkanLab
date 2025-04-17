@@ -11,10 +11,11 @@ public:
     ~WindowManager();
 
     void create(uint32_t width, uint32_t height, const std::string& title);
-    void pollEvents() const;
-    bool shouldClose() const;
-    void setResizeCallback(std::function<void(int, int)> callback);
-    GLFWwindow* get() const;
+
+    static void pollEvents() { glfwPollEvents(); }
+    [[nodiscard]] bool shouldClose() const { return glfwWindowShouldClose(m_window); }
+    void setResizeCallback(std::function<void(int, int)> callback) { m_resizeCallback = std::move(callback); }
+    [[nodiscard]] GLFWwindow* get() const { return m_window; }
 
 private:
     GLFWwindow* m_window = nullptr;

@@ -14,8 +14,8 @@ const std::vector deviceExtensions = {
 };
 
 VulkanDevice::VulkanDevice(VkInstance instance, const WindowManager& windowManager)
-    : m_instance(instance)
-{
+    : m_instance(instance) {
+
     createSurface(windowManager.get());
     pickPhysicalDevice();
     createLogicalDevice();
@@ -99,10 +99,10 @@ void VulkanDevice::createLogicalDevice() {
     float queuePriority = 1.0f;
     for (const uint32_t family : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueInfo {
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .queueFamilyIndex = family,
-            .queueCount = 1,
-            .pQueuePriorities = &queuePriority
+            .sType              = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueFamilyIndex   = family,
+            .queueCount         = 1,
+            .pQueuePriorities   = &queuePriority
         };
         queueCreateInfos.push_back(queueInfo);
     }
@@ -110,12 +110,12 @@ void VulkanDevice::createLogicalDevice() {
     VkPhysicalDeviceFeatures deviceFeatures{}; // Fill later when needed
 
     VkDeviceCreateInfo createInfo {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
-        .pQueueCreateInfos = queueCreateInfos.data(),
-        .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
-        .ppEnabledExtensionNames = deviceExtensions.data(),
-        .pEnabledFeatures = &deviceFeatures
+        .sType                      = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .queueCreateInfoCount       = static_cast<uint32_t>(queueCreateInfos.size()),
+        .pQueueCreateInfos          = queueCreateInfos.data(),
+        .enabledExtensionCount      = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames    = deviceExtensions.data(),
+        .pEnabledFeatures           = &deviceFeatures
     };
 
     const auto result = vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device);

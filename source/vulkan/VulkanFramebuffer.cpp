@@ -15,13 +15,13 @@ VulkanFramebuffer::VulkanFramebuffer(
         VkImageView attachments[] = { view };
 
         VkFramebufferCreateInfo info {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = renderPass,
-            .attachmentCount = 1,
-            .pAttachments = attachments,
-            .width = extent.width,
-            .height = extent.height,
-            .layers = 1
+            .sType              = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass         = renderPass,
+            .attachmentCount    = 1,
+            .pAttachments       = attachments,
+            .width              = extent.width,
+            .height             = extent.height,
+            .layers             = 1
         };
 
         VkFramebuffer fb;

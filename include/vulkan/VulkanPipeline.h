@@ -21,7 +21,7 @@ private:
     VkPipeline m_pipeline = VK_NULL_HANDLE;
     VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
 
-    VkShaderModule loadShaderModule(const std::string& path);
+    VkShaderModule loadShaderModule(const std::string& path) const;
 };
 
 

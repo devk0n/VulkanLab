@@ -5,8 +5,7 @@
 #include <format>
 
 VulkanDebugMessenger::VulkanDebugMessenger(VkInstance instance)
-    : m_instance(instance)
-{
+    : m_instance(instance) {
     VkDebugUtilsMessengerCreateInfoEXT createInfo {
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
         .messageSeverity =
@@ -43,8 +42,8 @@ VkBool32 VKAPI_CALL VulkanDebugMessenger::debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT severity,
     VkDebugUtilsMessageTypeFlagsEXT,
     const VkDebugUtilsMessengerCallbackDataEXT* callbackData,
-    void*)
-{
+    void*) {
+
     const std::string_view message = callbackData->pMessage;
 
     if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {

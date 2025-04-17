@@ -12,7 +12,7 @@ public:
     VulkanSwapchain(
         VkPhysicalDevice physicalDevice,
         VkDevice device,
-        const VulkanConfig& config,
+        VulkanConfig  config,
         VkSurfaceKHR surface,
         uint32_t graphicsQueueFamily,
         uint32_t presentQueueFamily,
@@ -38,7 +38,7 @@ private:
     std::vector<VkImage> m_images;
     std::vector<VkImageView> m_imageViews;
     VkFormat m_imageFormat;
-    VkExtent2D m_extent;
+    VkExtent2D m_extent{};
 
     VkSurfaceFormatKHR chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
     static VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& modes);

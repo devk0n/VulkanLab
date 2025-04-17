@@ -3,18 +3,20 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <utility>
 
 VulkanSwapchain::VulkanSwapchain(
     VkPhysicalDevice physicalDevice,
     VkDevice device,
-    const VulkanConfig& config,
+    VulkanConfig  config,
     VkSurfaceKHR surface,
     uint32_t graphicsQueueFamily,
     uint32_t presentQueueFamily,
     uint32_t windowWidth,
     uint32_t windowHeight,
-    VkSwapchainKHR oldSwapchain
-) : m_device(device) {
+    VkSwapchainKHR oldSwapchain)
+        : m_device(device),
+          m_config(std::move(config)) {
 
     VkSurfaceCapabilitiesKHR capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);

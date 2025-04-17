@@ -10,7 +10,7 @@
 #include "Logger.h"
 
 namespace {
-const std::array validation_layers = {
+constexpr std::array validation_layers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
@@ -24,13 +24,13 @@ VulkanInstance::VulkanInstance(VulkanConfig config) : m_config(std::move(config)
         throw std::runtime_error("Validation layers requested but not available.");
     }
 
-    const VkApplicationInfo appInfo {
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pApplicationName = "Fracture Framework",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "Fracture",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-        .apiVersion = VK_API_VERSION_1_3,
+    constexpr VkApplicationInfo appInfo {
+        .sType                  = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pApplicationName       = "Fracture Framework",
+        .applicationVersion     = VK_MAKE_VERSION(1, 0, 0),
+        .pEngineName            = "Fracture",
+        .engineVersion          = VK_MAKE_VERSION(1, 0, 0),
+        .apiVersion             = VK_API_VERSION_1_3,
     };
 
     const auto extensions = getRequiredExtensions();

@@ -6,8 +6,8 @@
 VulkanPipeline::VulkanPipeline(VkDevice device, VkRenderPass renderPass)
     : m_device(device)
 {
-    const VkShaderModule vertShader = loadShaderModule("/home/devkon/CLionProjects/VulkanLab/assets/shaders/triangle.vert.spv");
-    const VkShaderModule fragShader = loadShaderModule("/home/devkon/CLionProjects/VulkanLab/assets/shaders/triangle.frag.spv");
+    VkShaderModule vertShader = loadShaderModule("/home/devkon/CLionProjects/VulkanLab/assets/shaders/triangle.vert.spv");
+    VkShaderModule fragShader = loadShaderModule("/home/devkon/CLionProjects/VulkanLab/assets/shaders/triangle.frag.spv");
 
     VkPipelineShaderStageCreateInfo vertStage {
         .sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -26,42 +26,42 @@ VulkanPipeline::VulkanPipeline(VkDevice device, VkRenderPass renderPass)
     VkPipelineShaderStageCreateInfo shaderStages[] = { vertStage, fragStage };
 
     // Vertex input
-    const auto bindingDesc = Vertex::getBindingDescription();
-    const auto attrDescs = Vertex::getAttributeDescriptions();
+    const auto bindingDescriptions = Vertex::getBindingDescription();
+    const auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
     VkPipelineVertexInputStateCreateInfo vertexInput {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-        .vertexBindingDescriptionCount = 1,
-        .pVertexBindingDescriptions = &bindingDesc,
-        .vertexAttributeDescriptionCount = static_cast<uint32_t>(attrDescs.size()),
-        .pVertexAttributeDescriptions = attrDescs.data()
+        .sType                              = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+        .vertexBindingDescriptionCount      = 1,
+        .pVertexBindingDescriptions         = &bindingDescriptions,
+        .vertexAttributeDescriptionCount    = static_cast<uint32_t>(attributeDescriptions.size()),
+        .pVertexAttributeDescriptions       = attributeDescriptions.data()
     };
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-        .primitiveRestartEnable = VK_FALSE
+        .sType                      = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+        .topology                   = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+        .primitiveRestartEnable     = VK_FALSE
     };
 
     VkPipelineViewportStateCreateInfo viewportState {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-        .viewportCount = 1,
-        .pViewports = nullptr,
-        .scissorCount = 1,
-        .pScissors = nullptr
+        .sType          = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+        .viewportCount  = 1,
+        .pViewports     = nullptr,
+        .scissorCount   = 1,
+        .pScissors      = nullptr
     };
 
     VkPipelineRasterizationStateCreateInfo rasterizer {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-        .polygonMode = VK_POLYGON_MODE_FILL,
-        .cullMode = VK_CULL_MODE_BACK_BIT,
-        .frontFace = VK_FRONT_FACE_CLOCKWISE,
-        .lineWidth = 1.0f
+        .sType          = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+        .polygonMode    = VK_POLYGON_MODE_FILL,
+        .cullMode       = VK_CULL_MODE_BACK_BIT,
+        .frontFace      = VK_FRONT_FACE_CLOCKWISE,
+        .lineWidth      = 1.0f
     };
 
     VkPipelineMultisampleStateCreateInfo multisampling {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
+        .sType                  = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+        .rasterizationSamples   = VK_SAMPLE_COUNT_1_BIT
     };
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment {
@@ -72,14 +72,14 @@ VulkanPipeline::VulkanPipeline(VkDevice device, VkRenderPass renderPass)
     };
 
     VkPipelineColorBlendStateCreateInfo colorBlending {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-        .attachmentCount = 1,
-        .pAttachments = &colorBlendAttachment
+        .sType              = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+        .attachmentCount    = 1,
+        .pAttachments       = &colorBlendAttachment
     };
 
     // Layout
     VkPipelineLayoutCreateInfo layoutInfo {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
+        .sType              = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
     };
 
     if (vkCreatePipelineLayout(device, &layoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
@@ -91,26 +91,26 @@ VulkanPipeline::VulkanPipeline(VkDevice device, VkRenderPass renderPass)
     };
 
     VkPipelineDynamicStateCreateInfo dynamicState {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-        .dynamicStateCount = 2,
-        .pDynamicStates = dynamicStates
+        .sType              = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+        .dynamicStateCount  = 2,
+        .pDynamicStates     = dynamicStates
     };
 
     // Pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo {
-        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .stageCount = 2,
-        .pStages = shaderStages,
-        .pVertexInputState = &vertexInput,
-        .pInputAssemblyState = &inputAssembly,
-        .pViewportState = &viewportState,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState = &multisampling,
-        .pColorBlendState = &colorBlending,
-        .pDynamicState = &dynamicState,
-        .layout = m_pipelineLayout,
-        .renderPass = renderPass,
-        .subpass = 0
+        .sType                  = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+        .stageCount             = 2,
+        .pStages                = shaderStages,
+        .pVertexInputState      = &vertexInput,
+        .pInputAssemblyState    = &inputAssembly,
+        .pViewportState         = &viewportState,
+        .pRasterizationState    = &rasterizer,
+        .pMultisampleState      = &multisampling,
+        .pColorBlendState       = &colorBlending,
+        .pDynamicState          = &dynamicState,
+        .layout                 = m_pipelineLayout,
+        .renderPass             = renderPass,
+        .subpass                = 0
     };
 
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS)
@@ -125,7 +125,7 @@ VulkanPipeline::~VulkanPipeline() {
     if (m_pipelineLayout) vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 }
 
-VkShaderModule VulkanPipeline::loadShaderModule(const std::string& path) {
+VkShaderModule VulkanPipeline::loadShaderModule(const std::string& path) const {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file) throw std::runtime_error("Failed to open shader file: " + path);
 
@@ -135,9 +135,9 @@ VkShaderModule VulkanPipeline::loadShaderModule(const std::string& path) {
     file.read(buffer.data(), size);
 
     VkShaderModuleCreateInfo createInfo {
-        .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-        .codeSize = buffer.size(),
-        .pCode = reinterpret_cast<const uint32_t*>(buffer.data())
+        .sType      = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+        .codeSize   = buffer.size(),
+        .pCode      = reinterpret_cast<const uint32_t*>(buffer.data())
     };
 
     VkShaderModule shader;
