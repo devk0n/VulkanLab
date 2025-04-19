@@ -10,13 +10,15 @@ WindowManager::~WindowManager() {
     glfwTerminate();
 }
 
-void WindowManager::create(uint32_t width, uint32_t height, const std::string& title) {
+void WindowManager::create(int width, int height, const std::string& title) {
+    m_width = width;
+    m_height = height;
+
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title.c_str(), nullptr, nullptr);
-    if (!m_window)
-        throw std::runtime_error("Failed to create GLFW window.");
+    m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (!m_window) { throw std::runtime_error("Failed to create GLFW window."); }
 
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);

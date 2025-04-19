@@ -56,6 +56,9 @@ set(SOURCES
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         include/vulkan/VulkanConfig.h
+        include/core/Renderer.h
+        include/vulkan/VulkanContext.h
+        source/core/Renderer.cpp
 )
 
 # Main executable
