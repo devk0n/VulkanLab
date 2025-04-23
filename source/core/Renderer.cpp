@@ -320,9 +320,8 @@ void Renderer::onResize() {
 
 }
 
-void Renderer::waitIdle() {
-    if (m_context.device)
-        vkDeviceWaitIdle(m_context.device);
+void Renderer::waitIdle() const {
+    if (m_context.device) { vkDeviceWaitIdle(m_context.device); }
 }
 
 VulkanContext& Renderer::getContext() {

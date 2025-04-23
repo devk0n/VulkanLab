@@ -12,7 +12,7 @@ public:
     VulkanSwapchain(
         VkPhysicalDevice physicalDevice,
         VkDevice device,
-        VulkanConfig  config,
+        const VulkanConfig& config,
         VkSurfaceKHR surface,
         uint32_t graphicsQueueFamily,
         uint32_t presentQueueFamily,

@@ -8,7 +8,7 @@
 VulkanSwapchain::VulkanSwapchain(
     VkPhysicalDevice physicalDevice,
     VkDevice device,
-    VulkanConfig  config,
+    const VulkanConfig& config,
     VkSurfaceKHR surface,
     uint32_t graphicsQueueFamily,
     uint32_t presentQueueFamily,
@@ -16,7 +16,7 @@ VulkanSwapchain::VulkanSwapchain(
     uint32_t windowHeight,
     VkSwapchainKHR oldSwapchain)
         : m_device(device),
-          m_config(std::move(config)) {
+          m_config(config) {
 
     VkSurfaceCapabilitiesKHR capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);

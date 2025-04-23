@@ -25,7 +25,7 @@ public:
 
     void draw();
     void onResize();
-    void waitIdle();
+    void waitIdle() const;
 
     VulkanContext& getContext();
     VulkanConfig& getConfig();

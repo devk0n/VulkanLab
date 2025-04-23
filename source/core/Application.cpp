@@ -16,7 +16,6 @@ Application::Application() {
         m_renderer->getConfig()
     );
 
-
     m_windowManager->setResizeCallback([this](int, int) {
         m_renderer->onResize();
     });
