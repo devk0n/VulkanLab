@@ -2,11 +2,14 @@
 #include "WindowManager.h"
 #include "Renderer.h"
 #include "ImGuiLayer.h"
+#include "InputManager.h"
 #include "Logger.h"
 
 Application::Application() {
     m_windowManager = std::make_unique<WindowManager>();
     m_windowManager->create("VulkanLab");
+
+    InputManager::initialize(m_windowManager->get());
 
     m_renderer = std::make_unique<Renderer>(*m_windowManager);
 
@@ -30,6 +33,7 @@ Application::~Application() {
 void Application::run() {
     while (!m_windowManager->shouldClose()) {
         glfwPollEvents();
+        InputManager::update();
         m_renderer->draw();
     }
 }

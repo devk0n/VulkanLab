@@ -56,9 +56,13 @@ set(SOURCES
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         include/vulkan/VulkanConfig.h
-        include/core/Renderer.h
+        include/vulkan/Renderer.h
         include/vulkan/VulkanContext.h
-        source/core/Renderer.cpp
+        source/vulkan/Renderer.cpp
+        include/engine/Camera.h
+        include/engine/FreeLookCamera.h
+        include/core/InputManager.h
+        source/core/InputManager.cpp
 )
 
 # Main executable

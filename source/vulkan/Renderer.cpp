@@ -1,22 +1,22 @@
-#include "Renderer.h"
+#include "../../include/vulkan/Renderer.h"
 
-#include <imgui.h>
+#include <../../build/debug/_deps/imgui-src/imgui.h>
 #include <cstring>
 
-#include "Logger.h"
-#include "WindowManager.h"
-#include "ImGuiLayer.h"
-#include "VulkanCommandManager.h"
-#include "VulkanInstance.h"
-#include "VulkanDebugMessenger.h"
-#include "VulkanDevice.h"
-#include "VulkanSwapchain.h"
-#include "VulkanFramebuffer.h"
-#include "VulkanRenderPass.h"
-#include "VulkanSyncObjects.h"
-#include "Vertex.h"
-#include "VulkanBuffer.h"
-#include "VulkanPipeline.h"
+#include "../../include/Logger.h"
+#include "../../include/core/WindowManager.h"
+#include "../../include/core/ImGuiLayer.h"
+#include "../../include/vulkan/VulkanCommandManager.h"
+#include "../../include/vulkan/VulkanInstance.h"
+#include "../../include/vulkan/VulkanDebugMessenger.h"
+#include "../../include/vulkan/VulkanDevice.h"
+#include "../../include/vulkan/VulkanSwapchain.h"
+#include "../../include/vulkan/VulkanFramebuffer.h"
+#include "../../include/vulkan/VulkanRenderPass.h"
+#include "../../include/vulkan/VulkanSyncObjects.h"
+#include "../../include/vulkan/Vertex.h"
+#include "../../include/vulkan/VulkanBuffer.h"
+#include "../../include/vulkan/VulkanPipeline.h"
 
 static std::vector<Vertex> vertices = {
     { {  0.0f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
