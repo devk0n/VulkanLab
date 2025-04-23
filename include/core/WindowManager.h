@@ -11,7 +11,7 @@ public:
     WindowManager();
     ~WindowManager();
 
-    void create(int width, int height, const std::string& title);
+    void create(const std::string& title);
     static void pollEvents() { glfwPollEvents(); }
     [[nodiscard]] bool shouldClose() const { return glfwWindowShouldClose(m_window); }
 

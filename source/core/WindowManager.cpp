@@ -10,19 +10,27 @@ WindowManager::~WindowManager() {
     glfwTerminate();
 }
 
-void WindowManager::create(int width, int height, const std::string& title) {
-    m_width = width;
-    m_height = height;
+void WindowManager::create(const std::string& title) {
+    // Get primary monitor video mode
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+
+    // Set width and height to 80% of screen size
+    m_width = static_cast<int>(mode->width * 0.8);
+    m_height = static_cast<int>(mode->height * 0.8);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-    if (!m_window) { throw std::runtime_error("Failed to create GLFW window."); }
+    m_window = glfwCreateWindow(m_width, m_height, title.c_str(), nullptr, nullptr);
+    if (!m_window) {
+        throw std::runtime_error("Failed to create GLFW window.");
+    }
 
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
 }
+
 
 void WindowManager::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto* self = static_cast<WindowManager*>(glfwGetWindowUserPointer(window));

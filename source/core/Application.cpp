@@ -6,7 +6,7 @@
 
 Application::Application() {
     m_windowManager = std::make_unique<WindowManager>();
-    m_windowManager->create(1280, 720, "VulkanLab");
+    m_windowManager->create("VulkanLab");
 
     m_renderer = std::make_unique<Renderer>(*m_windowManager);
 
