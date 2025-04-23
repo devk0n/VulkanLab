@@ -12,14 +12,10 @@ Application::Application() {
 
     m_imguiLayer = std::make_unique<ImGuiLayer>(
         m_windowManager->get(),
-        m_renderer->getContext().instance,
-        m_renderer->getContext().device,
-        m_renderer->getContext().physicalDevice,
-        m_renderer->getContext().graphicsQueue,
-        m_renderer->getGraphicsQueueIndex(),
-        m_renderer->getContext().renderPass,
-        2
+        m_renderer->getContext(),
+        m_renderer->getConfig()
     );
+
 
     m_windowManager->setResizeCallback([this](int, int) {
         m_renderer->onResize();

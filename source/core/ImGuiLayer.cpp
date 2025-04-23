@@ -6,14 +6,9 @@
 
 ImGuiLayer::ImGuiLayer(
     GLFWwindow* window,
-    VkInstance instance,
-    VkDevice device,
-    VkPhysicalDevice physicalDevice,
-    VkQueue graphicsQueue,
-    uint32_t graphicsQueueFamily,
-    VkRenderPass renderPass,
-    uint32_t imageCount)
-    : m_device(device) {
+    const VulkanContext& context,
+    const VulkanConfig& config)
+    : m_device(context.device) {
     // Descriptor pool for ImGui
     createDescriptorPool();
 
@@ -26,15 +21,15 @@ ImGuiLayer::ImGuiLayer(
     ImGui_ImplGlfw_InitForVulkan(window, true);
 
     ImGui_ImplVulkan_InitInfo initInfo = {};
-    initInfo.Instance           = instance;
-    initInfo.PhysicalDevice     = physicalDevice;
-    initInfo.Device             = device;
-    initInfo.QueueFamily        = graphicsQueueFamily;
-    initInfo.Queue              = graphicsQueue;
+    initInfo.Instance           = context.instance;
+    initInfo.PhysicalDevice     = context.physicalDevice;
+    initInfo.Device             = context.device;
+    initInfo.QueueFamily        = context.graphicsQueueFamily;
+    initInfo.Queue              = context.graphicsQueue;
     initInfo.DescriptorPool     = m_descriptorPool;
-    initInfo.MinImageCount      = imageCount;
-    initInfo.ImageCount         = imageCount;
-    initInfo.RenderPass         = renderPass;
+    initInfo.MinImageCount      = config.maxFramesInFlight;
+    initInfo.ImageCount         = config.maxFramesInFlight;
+    initInfo.RenderPass         = context.renderPass;
 
     ImGui_ImplVulkan_Init(&initInfo);
 }

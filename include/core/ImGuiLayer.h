@@ -4,17 +4,15 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
+#include "VulkanContext.h"
+#include "VulkanConfig.h"
+
 class ImGuiLayer {
 public:
-    ImGuiLayer(
+    explicit ImGuiLayer(
         GLFWwindow* window,
-        VkInstance instance,
-        VkDevice device,
-        VkPhysicalDevice physicalDevice,
-        VkQueue graphicsQueue,
-        uint32_t graphicsQueueFamily,
-        VkRenderPass renderPass,
-        uint32_t imageCount);
+        const VulkanContext& context,
+        const VulkanConfig& config);
 
     ~ImGuiLayer();
 

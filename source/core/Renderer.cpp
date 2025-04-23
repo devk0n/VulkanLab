@@ -101,6 +101,8 @@ Renderer::Renderer(WindowManager& windowManager)
     m_context.renderPass           = m_renderPass->get();
     m_context.swapchainExtent      = m_swapchain->getExtent();
     m_context.swapchainImageFormat = m_swapchain->getImageFormat();
+
+    m_context.graphicsQueueFamily = m_device->getQueueIndices().graphics.value();
 }
 
 Renderer::~Renderer() {
@@ -325,6 +327,10 @@ void Renderer::waitIdle() {
 
 VulkanContext& Renderer::getContext() {
     return m_context;
+}
+
+VulkanConfig& Renderer::getConfig() {
+    return m_config;
 }
 
 uint32_t Renderer::getGraphicsQueueIndex() const {

@@ -28,6 +28,7 @@ public:
     void waitIdle();
 
     VulkanContext& getContext();
+    VulkanConfig& getConfig();
     [[nodiscard]] uint32_t getGraphicsQueueIndex() const;
 
 private:
