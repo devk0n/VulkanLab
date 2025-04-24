@@ -61,6 +61,16 @@ bool InputManager::isMouseDown(int button) {
     return s_mouseButtons[button];
 }
 
+bool InputManager::isMousePressed(int button) {
+    if (s_ignoreImGui && ImGui::GetIO().WantCaptureMouse) return false;
+    return s_mouseButtons[button] && !s_prevMouseButtons[button];
+}
+
+bool InputManager::isMouseReleased(int button) {
+    if (s_ignoreImGui && ImGui::GetIO().WantCaptureMouse) return false;
+    return !s_mouseButtons[button] && s_prevMouseButtons[button];
+}
+
 glm::vec2 InputManager::getMouseDelta() {
     if (s_ignoreImGui && ImGui::GetIO().WantCaptureMouse) return {};
     return s_mouseDelta;

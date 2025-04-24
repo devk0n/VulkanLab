@@ -1,8 +1,10 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <FreeLookCamera.h>
 #include <memory>
 
+#include "CameraUBO.h"
 #include "VulkanConfig.h"
 #include "VulkanContext.h"
 
@@ -37,6 +39,13 @@ private:
     WindowManager& m_windowManager;
     VulkanContext m_context;
     VulkanConfig m_config;
+
+    FreeLookCamera m_camera;
+
+    VkDescriptorSet m_descriptorSet;
+    VkDescriptorPool m_descriptorPool;
+    std::unique_ptr<VulkanBuffer> m_cameraBuffer;
+    CameraUBO m_cameraUBO;
 
     std::unique_ptr<VulkanInstance> m_instance;
     std::unique_ptr<VulkanDebugMessenger> m_debugMessenger;

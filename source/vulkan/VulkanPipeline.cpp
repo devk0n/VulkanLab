@@ -77,12 +77,32 @@ VulkanPipeline::VulkanPipeline(VkDevice device, VkRenderPass renderPass)
         .pAttachments       = &colorBlendAttachment
     };
 
-    // Layout
-    VkPipelineLayoutCreateInfo layoutInfo {
-        .sType              = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
+    // Descriptor set layout for camera UBO
+    VkDescriptorSetLayoutBinding uboLayoutBinding{
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = 1,
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT
     };
 
-    if (vkCreatePipelineLayout(device, &layoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
+    VkDescriptorSetLayoutCreateInfo layoutInfo{
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .bindingCount = 1,
+        .pBindings = &uboLayoutBinding
+    };
+
+    if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create descriptor set layout.");
+    }
+
+    // Layout
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo {
+        .sType              = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount     = 1,
+        .pSetLayouts        = &m_descriptorSetLayout
+    };
+
+    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         throw std::runtime_error("Failed to create pipeline layout.");
 
     VkDynamicState dynamicStates[] = {
@@ -146,3 +166,8 @@ VkShaderModule VulkanPipeline::loadShaderModule(const std::string& path) const {
 
     return shader;
 }
+
+VkDescriptorSetLayout VulkanPipeline::getDescriptorSetLayout() const {
+    return m_descriptorSetLayout;
+}
+

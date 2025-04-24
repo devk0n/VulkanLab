@@ -1,26 +1,29 @@
 #ifndef FREE_LOOK_CAMERA_H
 #define FREE_LOOK_CAMERA_H
 
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
 #include "Camera.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 class FreeLookCamera final : public Camera {
 public:
-    FreeLookCamera(float fov, float aspect, float nearPlane, float farPlane);
+    FreeLookCamera();
+
     void update(float dt) override;
     glm::mat4 getViewMatrix() const override;
     glm::mat4 getProjectionMatrix() const override;
 
-    void processInput(GLFWwindow* window, float dt);
+    glm::vec3 getPosition() const override { return m_position; }
+    glm::quat getOrientation() const override { return m_orientation; }
+
+    void setPosition(const glm::vec3& pos) { m_position = pos; }
+
 private:
     glm::vec3 m_position;
-    glm::vec3 m_direction;
-    glm::vec3 m_up;
+    glm::quat m_orientation;
 
-    float m_yaw, m_pitch;
-    float m_fov, m_aspect, m_near, m_far;
+    float m_moveSpeed = 4.5f;
+    float m_mouseSensitivity = 0.0018f;
 };
 
 #endif // FREE_LOOK_CAMERA_H

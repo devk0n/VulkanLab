@@ -15,6 +15,8 @@ public:
     static bool isKeyReleased(int key);
 
     static bool isMouseDown(int button);
+    static bool isMousePressed(int button);
+    static bool isMouseReleased(int button);
     static glm::vec2 getMouseDelta();
     static glm::vec2 getMousePosition();
 

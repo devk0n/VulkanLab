@@ -40,7 +40,9 @@ set(SOURCES
         source/core/Application.cpp
         source/core/WindowManager.cpp
         source/core/ImGuiLayer.cpp
+        source/core/InputManager.cpp
 
+        source/vulkan/Renderer.cpp
         source/vulkan/VulkanInstance.cpp
         source/vulkan/VulkanDebugMessenger.cpp
         source/vulkan/VulkanDevice.cpp
@@ -52,17 +54,12 @@ set(SOURCES
         source/vulkan/VulkanBuffer.cpp
         source/vulkan/VulkanPipeline.cpp
 
+        source/engine/FreeLookCamera.cpp
+
         # ImGui backends
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-        include/vulkan/VulkanConfig.h
-        include/vulkan/Renderer.h
-        include/vulkan/VulkanContext.h
-        source/vulkan/Renderer.cpp
-        include/engine/Camera.h
-        include/engine/FreeLookCamera.h
-        include/core/InputManager.h
-        source/core/InputManager.cpp
+        include/engine/CameraUBO.h
 )
 
 # Main executable
@@ -73,9 +70,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/include/core
         ${CMAKE_CURRENT_SOURCE_DIR}/include/vulkan
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/source/core
         ${CMAKE_CURRENT_SOURCE_DIR}/source/vulkan
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/engine
 
         # ImGui
         ${imgui_SOURCE_DIR}

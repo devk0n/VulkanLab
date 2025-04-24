@@ -1,4 +1,7 @@
 #include "Application.h"
+
+#include "CameraUBO.h"
+#include "FreeLookCamera.h"
 #include "WindowManager.h"
 #include "Renderer.h"
 #include "ImGuiLayer.h"
@@ -31,6 +34,7 @@ Application::~Application() {
 }
 
 void Application::run() {
+
     while (!m_windowManager->shouldClose()) {
         glfwPollEvents();
         InputManager::update();

@@ -2,6 +2,7 @@
 
 #include <../../build/debug/_deps/imgui-src/imgui.h>
 #include <cstring>
+#include <InputManager.h>
 
 #include "../../include/Logger.h"
 #include "../../include/core/WindowManager.h"
@@ -78,6 +79,56 @@ Renderer::Renderer(WindowManager& windowManager)
         m_renderPass->get()
     );
 
+    // Create uniform buffer for camera
+    m_cameraBuffer = std::make_unique<VulkanBuffer>(
+        m_device->getDevice(),
+        m_device->getPhysicalDevice(),
+        sizeof(CameraUBO),
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    );
+
+    // Create descriptor pool
+    VkDescriptorPoolSize poolSize{};
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = 1;
+
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = 1;
+
+    vkCreateDescriptorPool(m_device->getDevice(), &poolInfo, nullptr, &m_descriptorPool);
+
+    // Allocate descriptor set
+    VkDescriptorSetLayout layout = m_pipeline->getDescriptorSetLayout();
+
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = m_descriptorPool;
+    allocInfo.descriptorSetCount = 1;
+    allocInfo.pSetLayouts = &layout;
+
+    vkAllocateDescriptorSets(m_device->getDevice(), &allocInfo, &m_descriptorSet);
+
+    // Update descriptor set with buffer info
+    VkDescriptorBufferInfo bufferInfo{};
+    bufferInfo.buffer = m_cameraBuffer->get();
+    bufferInfo.offset = 0;
+    bufferInfo.range = sizeof(CameraUBO);
+
+    VkWriteDescriptorSet descriptorWrite{};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = m_descriptorSet;
+    descriptorWrite.dstBinding = 0;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pBufferInfo = &bufferInfo;
+
+    vkUpdateDescriptorSets(m_device->getDevice(), 1, &descriptorWrite, 0, nullptr);
+
     m_vertexBuffer = std::make_unique<VulkanBuffer>(
         m_device->getDevice(),
         m_device->getPhysicalDevice(),
@@ -103,35 +154,34 @@ Renderer::Renderer(WindowManager& windowManager)
     m_context.swapchainImageFormat = m_swapchain->getImageFormat();
 
     m_context.graphicsQueueFamily = m_device->getQueueIndices().graphics.value();
+
+    m_camera.setPosition({0, 0, 2});
 }
 
 Renderer::~Renderer() {
     waitIdle();
 
-    // Resources tied to VkDevice
     m_vertexBuffer.reset();
+    m_cameraBuffer.reset();
     m_pipeline.reset();
     m_framebuffer.reset();
     m_renderPass.reset();
     m_syncObjects.reset();
     m_commandManager.reset();
-
-    // Swapchain (uses device for destruction)
     m_swapchain.reset();
 
-    // Device last
+    if (m_descriptorPool != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(m_device->getDevice(), m_descriptorPool, nullptr);
+    }
+
     m_device.reset();
 
-    // Validation/debug afterwards (optional)
     if (m_config.enableValidationLayers) {
         m_debugMessenger.reset();
     }
 
-    // Instance last
     m_instance.reset();
-
 }
-
 
 
 void Renderer::draw() {
@@ -143,6 +193,24 @@ void Renderer::draw() {
     VkRenderPass renderPass = m_renderPass->get();
     const VkExtent2D extent = m_swapchain->getExtent();
     const auto& framebuffers = m_framebuffer->getFramebuffers();
+
+    static double lastFrame = glfwGetTime();
+    double now = glfwGetTime();
+    float deltaTime = static_cast<float>(now - lastFrame);
+    lastFrame = now;
+
+    if (InputManager::isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+        m_camera.update(deltaTime);
+    }
+
+    // Update camera UBO
+    m_cameraUBO.view = m_camera.getViewMatrix();         // <- you need to provide this
+    m_cameraUBO.projection = m_camera.getProjectionMatrix();   // <- and this
+
+    void* data;
+    vkMapMemory(m_device->getDevice(), m_cameraBuffer->getMemory(), 0, sizeof(CameraUBO), 0, &data);
+    memcpy(data, &m_cameraUBO, sizeof(CameraUBO));
+    vkUnmapMemory(m_device->getDevice(), m_cameraBuffer->getMemory());
 
     // Wait for this frame’s fence
     vkWaitForFences(device, 1, &frameSync.inFlight, VK_TRUE, UINT64_MAX);
@@ -214,6 +282,14 @@ void Renderer::draw() {
     vkCmdSetViewport(cmd, 0, 1, &viewport);
     vkCmdSetScissor(cmd, 0, 1, &scissor);
 
+    vkCmdBindDescriptorSets(
+        cmd,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        m_pipeline->getLayout(),
+        0, 1,
+        &m_descriptorSet,
+        0, nullptr
+    );
 
     vkCmdDraw(cmd, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
