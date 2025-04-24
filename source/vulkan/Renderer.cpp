@@ -20,10 +20,11 @@
 #include "../../include/vulkan/VulkanPipeline.h"
 
 static std::vector<Vertex> vertices = {
-    { {  0.0f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-    { {  0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-    { { -0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f } }
+    { { 0.0f, -0.5f, 0.5f }, { 1.0f, 0.0f, 0.0f } },  // bottom left (YZ plane)
+    { { 0.0f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },  // top
+    { { 0.0f, -0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f } }  // bottom right
 };
+
 
 Renderer::Renderer(WindowManager& windowManager)
     : m_windowManager(windowManager) {
@@ -155,7 +156,8 @@ Renderer::Renderer(WindowManager& windowManager)
 
     m_context.graphicsQueueFamily = m_device->getQueueIndices().graphics.value();
 
-    m_camera.setPosition({0, 0, 2});
+    m_camera.setPosition({ -2.0f, 0.0f, 0.0f });
+
 }
 
 Renderer::~Renderer() {

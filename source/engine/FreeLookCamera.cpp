@@ -10,17 +10,17 @@ FreeLookCamera::FreeLookCamera()
 void FreeLookCamera::update(float dt) {
     using namespace glm;
 
-    // Handle rotation via mouse
+    // Mouse rotation: yaw (around Z+), pitch (around Y+)
     const vec2 delta = InputManager::getMouseDelta();
-    quat yaw   = angleAxis(-delta.x * m_mouseSensitivity, vec3(0, 1, 0)); // Yaw around Z
-    quat pitch = angleAxis(delta.y * m_mouseSensitivity, vec3(1, 0, 0)); // Pitch around Y
+    quat yaw   = angleAxis(-delta.x * m_mouseSensitivity, vec3(0, 0, 1)); // yaw around Z+ (up)
+    quat pitch = angleAxis(-delta.y * m_mouseSensitivity, vec3(0, 1, 0)); // pitch around Y+ (left)
 
     m_orientation = normalize(yaw * m_orientation * pitch);
 
-    // Movement
-    vec3 forward = m_orientation * vec3(1, 0, 0); // +X is forward
-    vec3 left    = m_orientation * vec3(0, 1, 0); // +Y is left
-    vec3 up      = m_orientation * vec3(0, 0, 1); // +Z is up
+    // Movement axes — matching your custom basis
+    vec3 forward = m_orientation * vec3(1, 0, 0); // X+ forward
+    vec3 left    = m_orientation * vec3(0, 1, 0); // Y+ left
+    vec3 up      = m_orientation * vec3(0, 0, 1); // Z+ up
 
     vec3 velocity(0.0f);
     if (InputManager::isKeyDown(GLFW_KEY_W)) velocity += forward;
@@ -34,11 +34,13 @@ void FreeLookCamera::update(float dt) {
 }
 
 glm::mat4 FreeLookCamera::getViewMatrix() const {
-    return translate(mat4_cast(conjugate(m_orientation)), -m_position);
+    glm::vec3 forward = m_orientation * glm::vec3(1, 0, 0); // X+
+    glm::vec3 up      = m_orientation * glm::vec3(0, 0, 1); // Z+
+    return lookAt(m_position, m_position + forward, up);
 }
 
 glm::mat4 FreeLookCamera::getProjectionMatrix() const {
     float aspectRatio = 2048 / 1152;
-    return glm::perspective(glm::radians(70.0f), aspectRatio, 0.1f, 1000.0f);
+    return glm::perspective(glm::radians(90.0f), aspectRatio, 0.1f, 1000.0f);
 }
 
